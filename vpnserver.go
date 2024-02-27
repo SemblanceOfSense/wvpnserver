@@ -21,7 +21,7 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     case "/addprivatekey":
         switch r.Method {
         case http.MethodPost:
-            fmt.Print(requesthandler.PrivateKeyRequest(r.Body).Ciphertext)
+            fmt.Print(string(requesthandler.PrivateKeyRequest(r.Body).Ciphertext))
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
