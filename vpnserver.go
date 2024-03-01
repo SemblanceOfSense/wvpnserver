@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"vpnserver/internal/requesthandler"
+    "vpnserver/internal/dbhandler"
 )
 
 func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +22,8 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     case "/addprivatekey":
         switch r.Method {
         case http.MethodPost:
-            fmt.Print(string(requesthandler.PrivateKeyRequest(r.Body).Ciphertext))
+            err := dbhandler.AddPublicKey(requesthandler.PublicKeyRequest(r.Body))
+            fmt.Println(err)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
