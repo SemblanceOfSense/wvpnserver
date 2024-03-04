@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"os"
+    "log"
 	"net/http"
+	"vpnserver/internal/dbhandler"
 	"vpnserver/internal/requesthandler"
-    "vpnserver/internal/dbhandler"
 )
 
 func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +26,24 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         case http.MethodPost:
             err := dbhandler.AddPrivKey(requesthandler.PrivateKeyRequest(r.Body))
             if err != nil {log.Fatal(err)}
+        default:
+            http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        }
+    case "/getpublickey":
+        switch r.Method {
+        case http.MethodGet:
+            j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + r.Header.Get("UserID"))
+            if err != nil { fmt.Println(err) }
+            w.Write(j)
+        default:
+            http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        }
+    case "/getprivatekey":
+        switch r.Method {
+        case http.MethodGet:
+            j, err := os.ReadFile("/home/semblanceofsense/auth/privkeys/" + r.Header.Get("UserID"))
+            if err != nil { fmt.Println(err) }
+            w.Write(j)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
