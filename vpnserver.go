@@ -16,7 +16,7 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
             fmt.Fprintf(w, "hi")
         case http.MethodPost:
             err := dbhandler.AddPublicKey(requesthandler.PublicKeyRequest(r.Body))
-            if err != nil {fmt.Println(err)}
+            if err != nil {log.Fatal(err)}
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
@@ -24,7 +24,7 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         switch r.Method {
         case http.MethodPost:
             err := dbhandler.AddPrivKey(requesthandler.PrivateKeyRequest(r.Body))
-            if err != nil {fmt.Println(err)}
+            if err != nil {log.Fatal(err)}
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
