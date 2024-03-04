@@ -12,7 +12,7 @@ import (
 func AddPublicKey(body requesthandler.PublicKeyRequestStruct) error {
     var file *os.File
     if _, err := os.Stat("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(body.UserID)); errors.Is(err, os.ErrNotExist) {
-        file, err = os.Create("/home/semblanceofsense/auth/pubkeys" + strconv.Itoa(body.UserID))
+        file, err = os.Create("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(body.UserID))
         if err != nil {
             return err
         }
