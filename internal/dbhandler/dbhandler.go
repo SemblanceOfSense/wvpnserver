@@ -32,7 +32,7 @@ func AddPublicKey(body requesthandler.PublicKeyRequestStruct) error {
 func AddPrivKey(body requesthandler.PrivateKeyRequestStruct) error {
     var file *os.File
         if _, err := os.Stat("/home/semblanceofsense/auth/privkeys/" + strconv.Itoa(body.UserID)); errors.Is(err, os.ErrNotExist) {
-            file, err = os.Create("/home/semblanceofsense/auth/privkeys" + strconv.Itoa(body.UserID))
+            file, err = os.Create("/home/semblanceofsense/auth/privkeys/" + strconv.Itoa(body.UserID))
             if err != nil {
                 return err
             }
