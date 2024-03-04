@@ -2,33 +2,49 @@ package dbhandler
 
 import (
 	"encoding/json"
+    "os"
 	"vpnserver/internal/requesthandler"
 
-	"context"
-	"time"
-
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+    "errors"
+    "strconv"
 )
 
 func AddPublicKey(body requesthandler.PublicKeyRequestStruct) error {
-    ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-    defer cancel()
-    client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-    if err != nil { return err }
+    var file *os.File
+    if _, err := os.Stat("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(body.UserID)); errors.Is(err, os.ErrNotExist) {
+        file, err = os.Create("/home/semblanceofsense/auth/pubkeys" + strconv.Itoa(body.UserID))
+        if err != nil {
+            return err
+        }
+    } else {
+        return errors.New("PubKey Already Added")
+    }
 
-    collection := client.Database("wvpn").Collection("PublicKeys")
+    marshal, error := json.Marshal(body)
+    if error != nil {return error}
 
-    json, err := json.Marshal(body)
-    if err != nil { return err }
-
-    var doc interface{}
-    err = bson.UnmarshalExtJSON(json, true, &doc)
-    if err != nil { return err }
-
-    _, err = collection.InsertOne(context.TODO(), doc)
-    if err != nil { return err }
+    _, error = file.WriteString(string(marshal))
+    if error != nil {return error}
 
     return nil
+}
+
+func AddPrivKey(body requesthandler.PrivateKeyRequestStruct) error {
+    var file *os.File
+        if _, err := os.Stat("/home/semblanceofsense/auth/privkeys/" + strconv.Itoa(body.UserID)); errors.Is(err, os.ErrNotExist) {
+            file, err = os.Create("/home/semblanceofsense/auth/privkeys" + strconv.Itoa(body.UserID))
+            if err != nil {
+                return err
+            }
+        } else {
+            return errors.New("PubKey Already Added")
+        }
+
+        marshal, error := json.Marshal(body)
+        if error != nil {return error}
+
+        _, error = file.WriteString(string(marshal))
+        if error != nil {return error}
+
+        return nil
 }

@@ -15,15 +15,16 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         case http.MethodGet:
             fmt.Fprintf(w, "hi")
         case http.MethodPost:
-            fmt.Print(requesthandler.PublicKeyRequest(r.Body).Publickey.E)
+            err := dbhandler.AddPublicKey(requesthandler.PublicKeyRequest(r.Body))
+            if err != nil {fmt.Println(err)}
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
     case "/addprivatekey":
         switch r.Method {
         case http.MethodPost:
-            err := dbhandler.AddPublicKey(requesthandler.PublicKeyRequest(r.Body))
-            fmt.Println(err)
+            err := dbhandler.AddPrivKey(requesthandler.PrivateKeyRequest(r.Body))
+            if err != nil {fmt.Println(err)}
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
