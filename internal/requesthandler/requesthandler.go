@@ -48,7 +48,7 @@ func PrivateKeyRequest(v io.ReadCloser) PrivateKeyRequestStruct {
 }
 
 func GetVpnKey() (string, error) {
-    req, err := http.NewRequest("GET", "http://140.82.19.210:8080/privkey", nil)
+    req, err := http.NewRequest("GET", "http://140.82.19.210:8080/getpubkey", nil)
     if err != nil { return "", err }
 
     resp, err := http.DefaultClient.Do(req)
