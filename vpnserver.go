@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
-    "log"
+	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"vpnserver/internal/dbhandler"
 	"vpnserver/internal/requesthandler"
 )
@@ -43,6 +44,18 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         case http.MethodGet:
             j, err := os.ReadFile("/home/semblanceofsense/auth/privkeys/" + r.Header.Get("UserID"))
             if err != nil { fmt.Println(err) }
+            w.Write(j)
+        default:
+            http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        }
+    case "/getwgkey":
+        switch r.Method{
+        case http.MethodGet:
+            key, err := requesthandler.GetVpnKey()
+            if err != nil { fmt.Println(err) }
+            header, err := strconv.Atoi(r.Header.Get("UserID"))
+            if err != nil { fmt.Println(err) }
+            j, err := dbhandler.EncryptKey(header, key)
             w.Write(j)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

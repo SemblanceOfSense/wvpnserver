@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
     "crypto/rsa"
+    "net/http"
 )
 
 type PublicKeyRequestStruct struct {
@@ -44,4 +45,16 @@ func PrivateKeyRequest(v io.ReadCloser) PrivateKeyRequestStruct {
     }
 
     return request
+}
+
+func GetVpnKey() (string, error) {
+    req, err := http.NewRequest("GET", "http://140.82.19.210:8080/privkey", nil)
+    if err != nil { return "", err }
+
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil { return "", err }
+    defer resp.Body.Close()
+    body, err := io.ReadAll(resp.Body)
+
+    return string(body), nil
 }
