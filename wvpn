@@ -1,0 +1,10 @@
+#!/bin/ksh
+daemon="/usr/local/bin/vpninterface" # fossil executable
+daemon_user="root" # user to run fossil as
+
+. /etc/rc.d/rc.subr
+rc_reload=NO # Unsupported by Fossil; 'rcctl reload fossil' kills t
+he process.
+rc_bg=YES # Run in the background, since fossil serve does not daem
+onize itself
+rc_cmd $1

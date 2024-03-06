@@ -61,7 +61,7 @@ func EncryptKey(id int, key string) ([]byte, error) {
 
     encryptedBytes, err := rsa.EncryptOAEP(
 	    sha256.New(),
-	    crand.Reader,
+        nil,
 	    publicStruct,
 	    []byte(key),
 	nil)
