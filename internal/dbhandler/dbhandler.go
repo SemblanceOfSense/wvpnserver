@@ -9,7 +9,6 @@ import (
 	"errors"
 	"strconv"
     "crypto/sha256"
-    crand "crypto/rand"
 )
 
 func AddPublicKey(body requesthandler.PublicKeyRequestStruct) error {
@@ -53,7 +52,7 @@ func AddPrivKey(body requesthandler.PrivateKeyRequestStruct) error {
 }
 
 func EncryptKey(id int, key string) ([]byte, error) {
-    j, err := os.ReadFile("/home/semblanceofsense/auth/privkeys/" + strconv.Itoa(id))
+    j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(id))
     if err != nil { return make([]byte, 0), err }
 
     publicStruct := &rsa.PublicKey{}
