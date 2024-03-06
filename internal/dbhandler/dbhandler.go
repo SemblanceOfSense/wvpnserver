@@ -1,14 +1,16 @@
 package dbhandler
 
 import (
+	crand "crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
 	"encoding/json"
-	"os"
-	"vpnserver/internal/requesthandler"
-
 	"errors"
+	"hash"
+	"io"
+	"os"
 	"strconv"
-    "crypto/sha256"
+	"vpnserver/internal/requesthandler"
 )
 
 func AddPublicKey(body requesthandler.PublicKeyRequestStruct) error {
@@ -51,22 +53,32 @@ func AddPrivKey(body requesthandler.PrivateKeyRequestStruct) error {
         return nil
 }
 
-func EncryptKey(id int, key string) ([]byte, error) {
+type EncryptedWgKey struct {
+    sha hash.Hash
+    rand io.Reader
+    cipherText []byte
+}
+
+func EncryptKey(id int, key string) (EncryptedWgKey, error) {
     j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(id))
-    if err != nil { return make([]byte, 0), err }
+    if err != nil { return EncryptedWgKey{}, err }
 
     publicStruct := &rsa.PublicKey{}
     json.Unmarshal(j, publicStruct)
 
+    sha := sha256.New()
+    rand := crand.Reader
+
     encryptedBytes, err := rsa.EncryptOAEP(
-	    sha256.New(),
-        nil,
-	    publicStruct,
+	    sha,
+        rand,
+        publicStruct,
 	    []byte(key),
-	nil)
+	    nil,
+    )
     if err != nil {
-        return make([]byte, 0), err
+        return EncryptedWgKey{}, err
     }
 
-    return encryptedBytes, nil
+    return EncryptedWgKey{sha, rand, encryptedBytes}, nil
 }

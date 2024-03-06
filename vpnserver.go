@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -56,7 +57,8 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
             header, err := strconv.Atoi(r.Header.Get("UserID"))
             if err != nil { fmt.Println(err) }
             j, err := dbhandler.EncryptKey(header, key)
-            w.Write(j)
+            k, _ := json.Marshal(j)
+            w.Write(k)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
