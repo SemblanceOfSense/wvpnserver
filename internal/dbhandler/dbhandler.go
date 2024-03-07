@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"hash"
 	"io"
 	"os"
@@ -61,10 +62,14 @@ type EncryptedWgKey struct {
 
 func EncryptKey(id int, key string) ([]byte, error) {
     j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(id))
+    fmt.Println(string(j))
+
     if err != nil { return make([]byte, 0), err }
 
-    publicStruct := &rsa.PublicKey{}
+    publicStruct := &requesthandler.PublicKeyRequestStruct{}
     json.Unmarshal(j, publicStruct)
+
+    publicKey := publicStruct.Publickey
 
     sha := sha256.New()
     rand := crand.Reader
@@ -72,7 +77,7 @@ func EncryptKey(id int, key string) ([]byte, error) {
     encryptedBytes, err := rsa.EncryptOAEP(
 	    sha,
         rand,
-        publicStruct,
+        &publicKey,
 	    []byte(key),
 	    nil,
     )
