@@ -13,7 +13,6 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"vpnserver/internal/requesthandler"
 )
 
 type PublicKeyRequestStruct struct {
@@ -85,10 +84,10 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
     j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(thingStruct.id))
     if err != nil { return err }
 
-    publicStruct := &requesthandler.PublicKeyRequestStruct{}
-    json.Unmarshal(j, thingStruct)
+    publicStruct := &PublicKeyRequestStruct{}
+    json.Unmarshal(j, &thingStruct)
 
-    err = rsa.VerifyPSS(publicStruct.Publickey, crypto.SHA256, msgHashSum, thingStruct.signature, nil)
+    err = rsa.VerifyPSS(&publicStruct.Publickey, crypto.SHA256, msgHashSum, thingStruct.signature, nil)
     if err != nil {
         return err
     }
