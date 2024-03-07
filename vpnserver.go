@@ -66,12 +66,11 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     case "/addpeer":
         switch r.Method {
         case http.MethodPost:
-            thingStruct := &requesthandler.AddServerPeerStruct{}
-            j, err := io.ReadAll(r.Body)
-            if err != nil { log.Fatal(err) }
-            err = json.Unmarshal(j, thingStruct)
-            if err != nil { log.Fatal(err) }
-            requesthandler.AddServerPeer(*thingStruct)
+            decoder := json.NewDecoder(r.Body)
+            var t requesthandler.AddServerPeerStruct
+            err := decoder.Decode(&t)
+            if err != nil { fmt.Println(err) }
+            requesthandler.AddServerPeer(t)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
