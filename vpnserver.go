@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -58,6 +60,18 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
             j, err := dbhandler.EncryptKey(header, key)
             if err != nil { fmt.Println(err) }
             w.Write(j)
+        default:
+            http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        }
+    case "/addpeer":
+        switch r.Method {
+        case http.MethodPost:
+            thingStruct := &requesthandler.AddServerPeerStruct{}
+            j, err := io.ReadAll(r.Body)
+            if err != nil { log.Fatal(err) }
+            err = json.Unmarshal(j, thingStruct)
+            if err != nil { log.Fatal(err) }
+            requesthandler.AddServerPeer(*thingStruct)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         }
