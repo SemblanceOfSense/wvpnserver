@@ -59,9 +59,9 @@ type EncryptedWgKey struct {
     cipherText []byte
 }
 
-func EncryptKey(id int, key string) (EncryptedWgKey, error) {
+func EncryptKey(id int, key string) ([]byte, error) {
     j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(id))
-    if err != nil { return EncryptedWgKey{}, err }
+    if err != nil { return make([]byte, 0), err }
 
     publicStruct := &rsa.PublicKey{}
     json.Unmarshal(j, publicStruct)
@@ -77,8 +77,8 @@ func EncryptKey(id int, key string) (EncryptedWgKey, error) {
 	    nil,
     )
     if err != nil {
-        return EncryptedWgKey{}, err
+        return make([]byte, 0), err
     }
 
-    return EncryptedWgKey{sha, rand, encryptedBytes}, nil
+    return encryptedBytes, nil
 }
