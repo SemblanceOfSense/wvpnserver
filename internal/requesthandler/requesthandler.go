@@ -81,6 +81,7 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
     }
     msgHashSum := msgHash.Sum(nil)
 
+    fmt.Println(thingStruct.id)
     j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(thingStruct.id))
     if err != nil { return err }
 
