@@ -1,12 +1,19 @@
 package requesthandler
 
 import (
+	"bytes"
+	"crypto"
+	"crypto/rsa"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-    "crypto/rsa"
-    "net/http"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+	"vpnserver/internal/requesthandler"
 )
 
 type PublicKeyRequestStruct struct {
@@ -57,4 +64,46 @@ func GetVpnKey() (string, error) {
     body, err := io.ReadAll(resp.Body)
 
     return string(body), nil
+}
+
+type AddServerPeerStruct struct {
+    id int
+    pubkey string
+    signature []byte
+}
+
+func AddServerPeer(thingStruct AddServerPeerStruct) error {
+    msg := []byte(thingStruct.pubkey)
+
+    msgHash := sha256.New()
+    _, err := msgHash.Write(msg)
+    if err != nil {
+	    return err
+    }
+    msgHashSum := msgHash.Sum(nil)
+
+    j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(thingStruct.id))
+    if err != nil { return err }
+
+    publicStruct := &requesthandler.PublicKeyRequestStruct{}
+    json.Unmarshal(j, thingStruct)
+
+    err = rsa.VerifyPSS(publicStruct.Publickey, crypto.SHA256, msgHashSum, thingStruct.signature, nil)
+    if err != nil {
+        return err
+    }
+
+    req, err := http.NewRequest("POST", "https://140.82.19.210:8080/addpeer", bytes.NewReader([]byte(msg)))
+    if err != nil {
+        return err
+    }
+
+    client := http.Client{Timeout: 10 * time.Second}
+    res, err := client.Do(req)
+    if err != nil {
+        return err
+    }
+    log.Printf("status Code: %d", res.StatusCode)
+
+    return nil
 }
