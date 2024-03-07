@@ -84,6 +84,7 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
     fmt.Println(thingStruct.id)
     j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(thingStruct.id))
     if err != nil { return err }
+    fmt.Println(string(j))
 
     publicStruct := &PublicKeyRequestStruct{}
     err = json.Unmarshal(j, &thingStruct)
