@@ -88,7 +88,7 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
     fmt.Println(string(j))
     json.Unmarshal(j, &thingStruct)
 
-    err = rsa.VerifyPSS(publicStruct.Publickey, crypto.SHA256, msgHashSum, thingStruct.signature, nil)
+    err = rsa.VerifyPSS(&publicStruct.Publickey, crypto.SHA256, msgHashSum, thingStruct.signature, nil)
     if err != nil {
         return err
     }
