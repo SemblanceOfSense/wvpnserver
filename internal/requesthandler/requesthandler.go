@@ -71,6 +71,10 @@ type AddServerPeerStruct struct {
     Signature []byte
 }
 
+type AddPeerRequestStruct struct {
+    Publickey string
+}
+
 func AddServerPeer(thingStruct AddServerPeerStruct) error {
     msg := []byte(thingStruct.Pubkey)
 
@@ -95,7 +99,14 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
         return err
     }
 
-    req, err := http.NewRequest("POST", "http://140.82.19.210:8080/addpeer", bytes.NewReader([]byte(thingStruct.Pubkey)))
+    requestBody := &AddPeerRequestStruct{Publickey: thingStruct.Pubkey}
+
+    jsonData, err := json.Marshal(requestBody)
+    if err != nil {
+        panic(err)
+    }
+
+    req, err := http.NewRequest("POST", "http://140.82.19.210:8080/addpeer", bytes.NewReader(jsonData))
     if err != nil {
         return err
     }
