@@ -95,7 +95,7 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
         return err
     }
 
-    req, err := http.NewRequest("POST", "https://140.82.19.210:8080/addpeer", bytes.NewReader([]byte(msg)))
+    req, err := http.NewRequest("POST", "http://140.82.19.210:8080/addpeer", bytes.NewReader([]byte(msg)))
     if err != nil {
         return err
     }
