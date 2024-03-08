@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -69,7 +68,7 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
             decoder := json.NewDecoder(r.Body)
             var t requesthandler.AddServerPeerStruct
             err := decoder.Decode(&t)
-            if err != nil { fmt.Println(err) }
+            if err != nil { log.Fatal(err) }
             requesthandler.AddServerPeer(t)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
