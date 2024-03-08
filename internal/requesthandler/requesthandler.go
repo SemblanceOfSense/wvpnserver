@@ -66,13 +66,13 @@ func GetVpnKey() (string, error) {
 }
 
 type AddServerPeerStruct struct {
-    id int
-    pubkey string
-    signature []byte
+    Id int
+    Pubkey string
+    Signature []byte
 }
 
 func AddServerPeer(thingStruct AddServerPeerStruct) error {
-    msg := []byte(thingStruct.pubkey)
+    msg := []byte(thingStruct.Pubkey)
 
     msgHash := sha256.New()
     _, err := msgHash.Write(msg)
@@ -81,8 +81,8 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
     }
     msgHashSum := msgHash.Sum(nil)
 
-    fmt.Println(thingStruct.id)
-    j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(thingStruct.id))
+    fmt.Println(thingStruct.Id)
+    j, err := os.ReadFile("/home/semblanceofsense/auth/pubkeys/" + strconv.Itoa(thingStruct.Id))
     if err != nil { return err }
     fmt.Println(string(j))
 
@@ -90,7 +90,7 @@ func AddServerPeer(thingStruct AddServerPeerStruct) error {
     err = json.Unmarshal(j, &thingStruct)
     if err != nil { return err }
 
-    err = rsa.VerifyPSS(&publicStruct.Publickey, crypto.SHA256, msgHashSum, thingStruct.signature, nil)
+    err = rsa.VerifyPSS(&publicStruct.Publickey, crypto.SHA256, msgHashSum, thingStruct.Signature, nil)
     if err != nil {
         return err
     }

@@ -69,6 +69,7 @@ func (h HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
             var t requesthandler.AddServerPeerStruct
             err := decoder.Decode(&t)
             if err != nil { log.Fatal(err) }
+            fmt.Println(t.Signature)
             requesthandler.AddServerPeer(t)
         default:
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
